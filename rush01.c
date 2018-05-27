@@ -6,7 +6,7 @@
 /*   By: chlin <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/27 02:20:32 by chlin             #+#    #+#             */
-/*   Updated: 2018/05/27 03:00:03 by chlin            ###   ########.fr       */
+/*   Updated: 2018/05/27 03:55:19 by chlin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,39 @@ int	**fill_in_number(int **grid, char **argv)
 	return (grid);
 }
 
+int	check_row(int **grid, int y, int num)
+{
+	int x;
+
+	x = 0;
+	while (x < 9)
+	{
+		if (grid[y][x] == num)
+			return (0);
+		x++;
+	}
+	return (1);
+}
+
+int	check_column(int **grid, int x, int num)
+{
+	int y;
+
+	y = 0;
+	while (y < 9)
+	{
+		if (grid[y][x] == num)
+			return (0);
+		y++;
+	}
+	return (1);
+}
+/*
+int	check_block(int x, int y)
+{
+
+}
+*/
 void	print_grid(int **grid)
 {
 	int i;
@@ -85,5 +118,6 @@ int	main(int argc, char **argv)
 	grid = generate_grid();
 	grid = fill_in_number(grid, argv);
 	print_grid(grid);
+	//printf("%d\n", check_column(grid, 1, 6));
 	return (0);
 }
