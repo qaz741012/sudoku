@@ -6,7 +6,7 @@
 /*   By: chlin <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/27 02:20:32 by chlin             #+#    #+#             */
-/*   Updated: 2018/05/27 04:23:56 by chlin            ###   ########.fr       */
+/*   Updated: 2018/05/27 14:20:40 by chlin            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,17 @@ void	ft_putchar(char c)
 	write(1, &c, 1);
 }
 
-int **generate_grid()
+int		ft_strlen(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i] != '\0')
+		i++;
+	return (i);
+}
+
+int		**generate_grid()
 {
 	int i;
 	int **grid;
@@ -104,6 +114,90 @@ int	check_block(int **grid, int x, int y, int num)
 	return (1);
 }
 
+int	valid(int **grid, int x, int y, int num)
+{
+	return (check_row(grid, y, num) &&
+			check_column(grid, x, num) &&
+			check_block(grid, x, y, num));
+}
+
+int	doit(int **grid, int x, int y, int ***solution)
+{
+	int n;
+
+	if (grid[y][x] != 0)
+	{
+		if (x == 8 && y == 8)
+		{
+			*solution = grid;
+			return (1);
+		}
+		else if (x == 8)
+		{
+			if (doit(grid, 0, y + 1, solution))
+				return (1);
+		}
+		else
+		{
+			if (doit(grid, x + 1, y, solution))
+				return (1);
+		}
+	}
+	else
+	{
+		n = 1;
+		while (n <= 9)
+		{
+			if (valid(grid, x, y, n))
+			{
+				grid[y][x] = n;
+				if (x == 8 && y == 8)
+				{
+					*solution = grid;
+					return (1);
+				}
+				else if (x == 8)
+				{
+					if (doit(grid, 0, y + 1, solution))
+						return (1);
+				}
+				else
+				{
+					if (doit(grid, x + 1, y, solution))
+						return (1);
+				}
+			}
+			n++;
+		}
+		grid[y][x] = 0;
+	}
+	return (0);
+}
+
+int		error_case(int argc, char **argv)
+{
+	int i;
+	int j;
+
+	if (argc != 10)
+		return (1);
+	i = 1;
+	while (i <= 9)
+	{
+		if (ft_strlen(argv[i]) != 9)
+			return (1);
+		j = 0;
+		while (argv[i][j] != '\0')
+		{
+			if (!((argv[i][j] >= '1' && argv[i][j] <= '9') || argv[i][j] == '.'))
+				return (1);
+			j++;
+		}
+		i++;
+	}
+	return (0);
+}
+
 void	print_grid(int **grid)
 {
 	int i;
@@ -129,10 +223,19 @@ void	print_grid(int **grid)
 int	main(int argc, char **argv)
 {
 	int **grid;
-
+	int **result;
+	
+	if (error_case(argc, argv))
+	{
+		write(1, "Error\n", 6);
+		return (0);
+	}
 	grid = generate_grid();
 	grid = fill_in_number(grid, argv);
-	//print_grid(grid);
-	printf("%d\n", check_block(grid, 3, 6, 6));
+	result = generate_grid();
+	if (doit(grid, 0, 0, &result))
+		print_grid(grid);
+	else
+		write(1, "Error\n", 6);
 	return (0);
 }
